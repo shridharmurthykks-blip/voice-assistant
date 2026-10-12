@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Voice Assistant</title>
+<style>
+  body { font-family: Arial; max-width: 600px; margin: 40px auto; text-align: center; }
+  button { font-size: 20px; padding: 20px 40px; border-radius: 40px; border: none; background: #2b7; color: white; cursor: pointer; }
+  button.rec { background: #d33; }
+  #log { text-align: left; margin-top: 30px; }
+  .you { color: #06c; } .ai { color: #070; } .lat { color: #888; font-size: 12px; }
+</style>
+</head>
+<body>
+<h2>Voice Assistant</h2>
+<button id="btn">Hold to Talk</button>
+<p id="status">Ready</p>
+<div id="log"></div>
+<script>
+const btn = document.getElementById("btn"), status = document.getElementById("status"), log = document.getElementById("log");
+let ctx, stream, proc, chunks = [];
+async function start() {
+  stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+  ctx = new AudioContext({ sampleRate: 16000 });
+  const src = ctx.createMediaStreamSource(stream);
+  proc = ctx.createScriptProcessor(4096, 1, 1);
+  chunks = [];
+  proc.onaudioprocess = e => chunks.push(new Float32Array(e.inputBuffer.getChannelData(0)));
+  src.connect(proc); proc.connect(ctx.destination);
+  btn.classList.add("rec"); btn.textContent = "Listening..."; status.textContent = "Speak now";
+}
+async function stop() {
+  if (!ctx) return;
+  proc.disconnect(); stream.getTracks().forEach(t => t.stop()); await ctx.close(); ctx = null;
+  btn.classList.remove("rec"); btn.textContent = "Hold to Talk"; status.textContent = "Thinking...";
+  const len = chunks.reduce((a, c) => a + c.length, 0), pcm = new Int16Array(len);
+  let o = 0;
+  for (const c of chunks) for (let i = 0; i < c.length; i++) pcm[o++] = Math.max(-1, Math.min(1, c[i])) * 32767;
+  const form = new FormData();
+  form.append("file", new Blob([pcm.buffer]), "a.raw");
+  const r = await fetch("/talk", { method: "POST", body: form });
+  if (r.status === 204) { status.textContent = "Heard nothing, try again"; return; }
+  log.innerHTML += `<p class="you">You: ${r.headers.get("X-You")}</p><p class="ai">AI: ${r.headers.get("X-AI")}</p><p class="lat">${r.headers.get("X-Latency")}</p>`;
+  const audio = new Audio(URL.createObjectURL(await r.blob()));
+  status.textContent = "Speaking..."; audio.onended = () => status.textContent = "Ready"; audio.play();
+}
+btn.onmousedown = start; btn.onmouseup = stop;
+btn.ontouchstart = start; btn.ontouchend = stop;
+</script>
+</body>
+</html>
