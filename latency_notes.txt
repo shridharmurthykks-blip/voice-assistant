@@ -1,0 +1,2 @@
+small model: STT 2.7s | LLM 1.4s
+base model: STT 0.6s | LLM 1.2s to 5.6s
