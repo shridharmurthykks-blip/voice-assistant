@@ -26,3 +26,6 @@ Mic -> VAD -> STT (faster-whisper) -> LLM (Ollama qwen2.5:3b, streaming) -> TTS 
 ## Hardware
 
 Lenovo Yoga Slim 7, Intel Core Ultra 5 125H, 16 GB RAM, Intel Arc integrated
+## Demo video
+
+PASTE-YOUR-LINK-HERE
