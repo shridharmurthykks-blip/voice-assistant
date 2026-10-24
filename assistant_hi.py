@@ -91,7 +91,8 @@ while True:
         play_q.join()
         break
 
-    messages.append({"role": "user", "content": text})
+    hint = "Reply in English only." if lang == "en" else "Reply in Hindi only, in Devanagari script."
+    messages.append({"role": "user", "content": text + "\n(" + hint + ")"})
     t1 = time.time()
     full, buf, first = "", "", None
     print("AI: ", end="", flush=True)
