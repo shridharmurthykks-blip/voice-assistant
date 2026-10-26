@@ -68,7 +68,7 @@ How latency was reduced:
 
 ## Demo video
 
-https://drive.google.com/file/d/11tS0xHNMZ2licWXGLILRLx_a2Q_rr3k1/view?usp=sharing
+https://drive.google.com/file/d/1tgHYPPOl7N5Xxf_-3or3cx0mne8RLfYG/view?usp=drivesdk
 
 ## Known limitations
 
