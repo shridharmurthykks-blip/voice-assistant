@@ -100,7 +100,7 @@ def take_chunk(buf, early):
         if m:
             return m.group(1), buf[m.end():]
         parts = buf.split(" ")
-        if len(parts) >= 7:  # first 6 words are complete, start speaking
+        if len(parts) >= 7:
             return " ".join(parts[:6]), " ".join(parts[6:])
     return None, buf
 
